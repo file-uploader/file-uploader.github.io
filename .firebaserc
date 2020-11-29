@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "portfolio-e1ec5": {
+      "hosting": {
+        "file-uploader": [
+          "portfolio-e1ec5"
+        ]
+      }
+    }
+  }
+}
