@@ -1,1 +1,26 @@
-<p>test</p>
+<div>
+  <div>
+    <p *ngFor="let file of filesNames let i = index">{{file}}</p>
+  </div>
+  <div>
+    <form [formGroup]="filesUploadForm" (ngSubmit)="onSubmit(filesUploadForm)">
+      <input formControlName="files"
+      #chooseFiles style="display: none;"
+      type="file" 
+      (change)="uploadFiles($event)"
+      multiple="multiple">
+      <button type="button" (click)="chooseFiles.click()">Chоose Images</button>
+      <button type="submit" [disabled]="!filesUploadForm.valid">Upload Files</button>
+    </form>
+  </div>
+  <div>
+    <div *ngFor="let file of uploadedFiles">
+      <span>{{file.date.toDate() | date:'dd.MM.yyyy'}}</span>
+      <span>{{file.name}}</span>
+      <span>{{file.size}}</span>
+      <a href="{{file.url}}">{{file.url}}</a>
+
+      <button (click)="deleteLink(file.url, file.id)">Delete</button>
+    </div>
+  </div>
+</div>

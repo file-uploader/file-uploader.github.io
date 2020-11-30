@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
+}
+
+
+::selection {
+  // background: $default-red;
+  // color: $white;
+}
+
+img {
+  user-select: none;
+}
