@@ -1,4 +1,5 @@
 <div>
+  <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
   <div>
     <p *ngFor="let file of filesNames let i = index">{{file}}</p>
   </div>
@@ -9,18 +10,26 @@
       type="file" 
       (change)="uploadFiles($event)"
       multiple="multiple">
-      <button type="button" (click)="chooseFiles.click()">Chоose Images</button>
+      <button type="button" (click)="chooseFiles.click()">Chоose Files</button>
       <button type="submit" [disabled]="!filesUploadForm.valid">Upload Files</button>
     </form>
   </div>
   <div>
-    <div *ngFor="let file of uploadedFiles">
-      <span>{{file.date.toDate() | date:'dd.MM.yyyy'}}</span>
-      <span>{{file.name}}</span>
-      <span>{{file.size}}</span>
-      <a href="{{file.url}}">{{file.url}}</a>
-
-      <button (click)="deleteLink(file.url, file.id)">Delete</button>
-    </div>
+  <table>
+    <tr>
+      <th>Upload Date</th>
+      <th>File Name</th>
+      <th>Size</th>
+      <th>Download link</th>
+      <th>Delete</th>
+    </tr>
+    <tr *ngFor="let file of uploadedFiles">
+      <td>{{file.date.toDate() | date:'dd.MM.yyyy'}}</td>
+      <td>{{file.name}}</td>
+      <td>{{file.size}}</td>
+      <td><a href="{{file.url}}">{{file.url}}</a></td>
+      <td><button (click)="deleteFile(file.url, file.id)">Delete</button></td>
+    </tr>
+  </table>
   </div>
 </div>
