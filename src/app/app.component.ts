@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
   fileURLs: any = [];
   uploadedFiles: File[] = [];
   isLoading: boolean = true;
+  filesSize: number = 0;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -32,12 +33,16 @@ export class AppComponent implements OnInit {
     });
 
     this.firestore.getFiles().subscribe(files => {
+      this.filesSize = 0;
       this.uploadedFiles = files.map(e => {
         return {
           id: e.payload.doc.id,
           ...e.payload.doc.data() as File
         }
       })
+      for (let i = 0; i < this.uploadedFiles.length; i++) {
+        this.filesSize += this.uploadedFiles[i].size;
+      }
       this.isLoading = false;
     });
   }
@@ -45,7 +50,7 @@ export class AppComponent implements OnInit {
   uploadFiles(event) {
     for (let i = 0; i < event.target.files.length; i++){
       this.files.push(event.target.files[i]);
-      this.filesNames.push(this.files[i].name);
+      this.filesNames.push(event.target.files[i].name);
     } 
   }
 
@@ -105,5 +110,10 @@ export class AppComponent implements OnInit {
   deleteFile(url, id) {
     this.firestore.deleteFile(url);
     this.firestore.deleteFileInfo(id);    
+  }
+
+  removeEl(index) {
+    this.files.splice(index, 1);
+    this.filesNames.splice(index, 1);
   }
 }
