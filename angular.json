@@ -129,5 +129,8 @@
       }
     }
   },
-  "defaultProject": "file-uploader"
+  "defaultProject": "file-uploader",
+  "cli": {
+    "analytics": true
+  }
 }

@@ -7,7 +7,7 @@
 }
 
 body {
-  background-color: #202639;
+  background-color: #202020;
 }
 
 .container {
@@ -15,22 +15,17 @@ body {
   padding: 20px;
 }
 
-::selection {
-  // background: $default-red;
-  // color: $white;
-}
-
 img {
   user-select: none;
 }
 
 .upload-section {
-  text-align: center;  
+  text-align: center;
   width: 400px;
   margin: 0 auto;
   margin-bottom: 20px;
   &__button {
-    background-color: #1379af;
+    background-color: #5cb85c;
     border: none;
     outline: none;
     border-radius: 3px;
@@ -39,14 +34,14 @@ img {
     font-weight: bold;
     cursor: pointer;
     &:hover {
-      background-color: darken(#1379af, 10%)
+      background-color: darken(#5cb85c, 10%)
     }
   }
   &__choose {
     margin-right: 10px;
   }
   &__upload:disabled {
-    background-color: darken(#1379af, 15%);
+    background-color: darken(#5cb85c, 15%);
     cursor: not-allowed;
     color: #999;
   }
@@ -56,7 +51,7 @@ img {
   width: 400px;
   margin: 0 auto;
   margin-bottom: 20px;
-  &__files{
+  &__files {
     border: 1px solid #999;
     border-radius: 5px;
     padding: 10px;
@@ -90,7 +85,7 @@ img {
       }
     }
   }
-  &__img{
+  &__img {
     text-align: center;
     img {
       max-width: 200px;
@@ -102,8 +97,7 @@ img {
   width: 100%;
   border-collapse: collapse;
   color: #999;
-  &__delete {
-    background-color: #b53636;
+  button {
     border: none;
     outline: none;
     border-radius: 3px;
@@ -111,8 +105,17 @@ img {
     color: #fff;
     font-weight: bold;
     cursor: pointer;
+  }
+  &__delete {
+    background-color: #b53636;
     &:hover {
       background-color: darken(#b53636, 10%)
+    }
+  }
+  &__copy {
+    background-color: #ad8e07;
+    &:hover {
+      background-color: darken(#ad8e07, 10%)
     }
   }
   th, td {
@@ -125,18 +128,18 @@ img {
   }
   td {
     a {
-      color: #999 !important;
+      color: #999;
     }
   }
   tr {
-    background-color: #353d4f;
+    background-color: lighten(#202020, 10%);
   }
   tr:nth-child(1) {
-    background-color: #2e3447;
+    background-color: lighten(#202020, 5%);
   }
 }
 
-.no-files-uploaded{
+.no-files-uploaded {
   padding: 5px;
   text-align: center;
   color: #999;
@@ -148,18 +151,23 @@ img {
   padding: 10px 0;
   color: #999;
   font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  #confirm-delete {
+    margin-left: 5px;
+  }
 }
 
 .green {
-  color: #1379af;
+  color: #5cb85c !important;
 }
 
 .orange {
-  color: #f76300;
+  color: #f0ad4e;
 }
 
 .red {
-  color: #b53636;
+  color: #d9534f;
 }
 
 .loading-spinner {
@@ -272,5 +280,175 @@ img {
   }
   100% {
     opacity: 0;
+  }
+}
+
+.sign-form {
+  background-color: #2d2d2d;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.75);
+  max-width: 767px;
+  padding: 20px;
+  margin: 0 auto;
+  position: relative;
+  >* {
+    display: block;
+  }
+  &__sign-up-header {
+    h2 {
+      color: #b53636;
+      text-align: center;
+      font-size: 1.3em;
+      padding: 5px;
+    }
+  }
+  &__sign-element {
+    font-size: 1.1em;
+    margin: 20px 0;
+    .phone, .name, .email, .password {
+      display: flex;
+      margin-top: 5px;
+    }
+    .email {      
+      .email-img {
+        @extend .login-form;
+        background-image: url("./assets/img/email.png");
+        padding: 10px;
+      }
+    }
+    .password {      
+      .password-img {
+        @extend .login-form;
+        background-image: url("./assets/img/password.png");
+      }
+    }
+    .sign-error {
+      li {
+        color: #b53636;
+        font-size: 1.1em;
+        padding: 10px 0 0 0;
+        list-style: none;
+      }
+    }
+    input {
+      width: calc(100% - 50px);
+      border: 1px solid #999;
+      color: #000;
+      border-radius: 0 3px 3px 0;
+      box-sizing: border-box;
+      padding: 7px;
+      font-size: 1.1em;
+      outline: none;
+      background-color: rgba(#fff, 0.5);
+      filter: none;
+      &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus {
+        border: 1px solid #999;
+        -webkit-text-fill-color: #000;
+        -webkit-box-shadow: none;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+    }
+    label {
+      margin-bottom: 5px;
+      width: 100%;
+      color: #b53636;
+      font-size: 1.1em;
+    }
+  }
+}
+
+.if-phone-invalid {
+  border-top: 2px solid #b53636 !important;
+  border-left: 2px solid #b53636 !important;
+  border-bottom: 2px solid #b53636 !important;
+}
+
+.login-form {
+  background-color: #b53636;
+  background-size: contain;
+  background-position: center;
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  width: 50px;
+  border-radius: 3px 0 0 3px;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.hr-border {
+  border-top: 0;
+  border-bottom: 1px solid #999;
+  margin: 20px 0;
+}
+
+.error-msg {
+  color: #b53636;
+  font-size: 1.1em;
+  padding: 10px 0 0 0;
+}
+
+.btn-default {
+  background-color: #b53636;
+  width: 190px;
+  display: block;
+  margin: 0 auto;
+  height: 50px;
+  line-height: 50px;
+  color: #fff;
+  font-size: 1.1em;
+  transition: all 0.5s ease;
+  border-radius: 3px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  user-select: none;
+  &:hover {
+    background-color: #7a2626;
+  }
+}
+
+.confirm-delete-popup {
+  position: fixed;
+  width: 100vw;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(#000000, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &__options {
+    border: 1px solid #999;
+    border-radius: 5px;
+    background-color: #3a3a3a;
+    padding: 20px;
+    p {
+      color: #fff;
+      font-size: 1.1em;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    &__btns {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .confirmd-delete-btn {
+        padding: 15px;
+        width: 33%;
+        line-height: 0;
+        height: 25px;
+      }
+    }
+  }
+}
+
+.logout-btn-conteainer {
+  display: flex;
+  justify-content: flex-end;
+  button {
+    margin: 0;
+    padding: 15px;
+    width: 190px;
+    line-height: 0;
+    height: 25px;
   }
 }

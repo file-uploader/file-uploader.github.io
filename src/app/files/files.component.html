@@ -1,0 +1,63 @@
+<div class="container">
+  <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+  <div class="logout-btn-conteainer">
+    <button class="btn-default" (click)="logOut()">Logout</button>
+  </div>
+  <div class="upload-files">
+    <div *ngIf="files.length > 0" class="upload-files__files">
+      <div *ngFor="let file of filesNames let i = index" class="upload-files__files__el">
+        <p>{{file}}</p>
+        <div (click)="removeEl(i)" class="upload-files__files__el__button">X</div>
+      </div>
+    </div>
+    <div *ngIf="files.length == 0" class="upload-files__img">
+      <img src="../assets/img/upload-img.png">
+    </div>
+  </div>
+  <div class="upload-section">
+    <form [formGroup]="filesUploadForm" (ngSubmit)="onSubmit(filesUploadForm)">
+      <input formControlName="files" #chooseFiles style="display: none;" type="file" (change)="uploadFiles($event)" multiple="multiple">
+      <button class="upload-section__button upload-section__choose" type="button" (click)="chooseFiles.click()">Chоose Files</button>
+      <button class="upload-section__button upload-section__upload" type="submit" [disabled]="!filesUploadForm.valid || files.length == 0">Upload Files</button>
+    </form>
+  </div>
+  <div class="used-mb">
+    <div>
+      <p>
+        Used <span [ngClass]="{'green' : filesSize <= 524288000, 'orange' : filesSize > 524288000 && filesSize <= 734003200, 'red': filesSize > 734003200}">{{filesSize | MbPipe}}</span> of 1000 MB
+      </p>
+    </div>
+    <div>
+      <label for="confirm-delete">Cofirmation before delete</label>
+      <input (change)="confirmDelete($event)" type="checkbox" id="confirm-delete" name="confirm-delete" [checked]="confirmBeforeDelete">
+    </div>
+  </div>
+  <table class="table1">
+    <tr>
+      <th>Upload Date</th>
+      <th>File Name</th>
+      <th>Size</th>
+      <th>Download link</th>
+      <th>Copy</th>
+      <th>Delete</th>
+    </tr>
+    <tr *ngFor="let file of uploadedFiles">
+      <td>{{file.date.toDate() | date:'dd.MM.yyyy'}}</td>
+      <td>{{file.name}}</td>
+      <td>{{file.size | MbPipe}}</td>
+      <td><a [ngClass]="{'green' : file.id == fileId}" href="{{file.url}}">{{file.url}}</a></td>
+      <td><button class="table1__copy" (click)="copyFileLink(file.url, file.id)">Copy</button></td>
+      <td><button class="table1__delete" (click)="deleteFileChek(file.url, file.id)">Delete</button></td>
+    </tr>
+  </table>
+  <p class="no-files-uploaded" *ngIf="uploadedFiles.length == 0">There are no files uploaded</p>
+  <div *ngIf="confirmationPopup" class="confirm-delete-popup">
+    <div class="confirm-delete-popup__options">
+      <p>Аre you sure you want to delete the file?</p>
+      <div class="confirm-delete-popup__options__btns">
+        <button class="btn-default confirmd-delete-btn" (click)="confirmationYes()">Yes</button>
+        <button class="btn-default confirmd-delete-btn" (click)="confirmationNo()">No</button>
+      </div>
+    </div>
+  </div>
+</div>

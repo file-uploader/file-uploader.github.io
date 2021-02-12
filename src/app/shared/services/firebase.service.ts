@@ -28,4 +28,16 @@ export class FirestoreService {
   deleteFileInfo(id){
     return this.firestore.collection('files').doc(id).delete();
   }
+
+  getUser(email: string) {
+    return this.firestore
+    .collection('users', data => data.where('email', '==', email))
+    .snapshotChanges();
+  }
+
+  updateUser(newInfo){
+    return this.firestore.doc('users/' + newInfo.userId).update({
+      confirmDelete: newInfo.isChecked
+     });
+   }
 }

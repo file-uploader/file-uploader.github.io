@@ -1,119 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { AngularFireStorage } from '@angular/fire/storage';
-import * as firebase from 'firebase/app';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import { FirestoreService } from './shared/services/firebase.service';
-import { File } from './shared/models/file.model';
+import { AuthService } from './shared/services/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: []
 })
-export class AppComponent implements OnInit {
-  title = 'file-uploader';
-  filesUploadForm: FormGroup;
-  files: File[] = [];
-  filesNames: any = [];
-  fileURLs: any = [];
-  uploadedFiles: File[] = [];
-  isLoading: boolean = true;
-  filesSize: number = 0;
+export class AppComponent implements OnInit, OnDestroy {
+  private subUser: Subscription;
+  isAuth: boolean = false;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private angularFireStorage: AngularFireStorage,
-    private firestore: FirestoreService
-  ){}
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    this.filesUploadForm = this.formBuilder.group({
-      files: new FormControl(null, Validators.required)
+    this.subUser = this.authService.user.subscribe(user => {
+      this.isAuth = !user ? false : true;
     });
 
-    this.firestore.getFiles().subscribe(files => {
-      this.filesSize = 0;
-      this.uploadedFiles = files.map(e => {
-        return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data() as File
-        }
-      })
-      for (let i = 0; i < this.uploadedFiles.length; i++) {
-        this.filesSize += this.uploadedFiles[i].size;
-      }
-      this.isLoading = false;
-    });
+    this.authService.autoLogin();    
   }
 
-  uploadFiles(event) {
-    for (let i = 0; i < event.target.files.length; i++){
-      this.files.push(event.target.files[i]);
-      this.filesNames.push(event.target.files[i].name);
-    } 
-  }
-
-  uploadFilesToFirestore() {
-    return new Promise((resolve) => {
-      if(this.files.length == 0) {
-        this.filesUploadForm.value.files = this.fileURLs;
-        resolve();
-      }
-      for (let i = 0; i < this.files.length; i++) {
-        this.angularFireStorage.upload(
-          "/files/" +
-          this.filesNames[i], this.files[i])
-        .then(uploadTask => {
-          uploadTask.ref.getDownloadURL()
-          .then(url => {
-            this.fileURLs.push(url);
-            if (this.fileURLs.length == this.filesNames.length) {
-              this.filesUploadForm.value.files = this.fileURLs;
-              resolve();
-            }
-          })
-        });
-      }      
-    })
-  }
-
-  onSubmit(filesUploadForm) {
-    if (!filesUploadForm.valid) {
-      return
-    }
-
-    this.isLoading = true;
-
-    this.uploadFilesToFirestore().then(() => {
-      for (let i = 0; i < this.files.length; i ++){
-        const name = this.files[i].name;
-        const size = this.files[i].size;
-        const date = firebase.default.firestore.Timestamp.now();
-        const url = this.fileURLs[i];
-
-        const file = { name, size, date, url};
-        this.firestore.uploadFiles(file)
-        .then(() => {
-          this.isLoading = false;
-          if (i == this.files.length-1) {
-            this.filesUploadForm.reset();
-            this.files = [];
-            this.filesNames = [];
-            this.fileURLs = [];
-          } 
-        })       
-      } 
-    })  
-  }
-
-  deleteFile(url, id) {
-    this.firestore.deleteFile(url);
-    this.firestore.deleteFileInfo(id);    
-  }
-
-  removeEl(index) {
-    this.files.splice(index, 1);
-    this.filesNames.splice(index, 1);
+  ngOnDestroy() {
+    this.subUser.unsubscribe();
   }
 }
