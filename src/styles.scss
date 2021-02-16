@@ -447,8 +447,50 @@ img {
   button {
     margin: 0;
     padding: 15px;
-    width: 190px;
+    width: 150px;
     line-height: 0;
     height: 25px;
+  }
+  .login-report-btn {
+    margin-right: 10px !important;
+  }
+}
+
+.login-report {
+  position: absolute;
+  right: 20px;
+  top: 65px;
+  border: 1px solid #999;
+  border-radius: 5px;
+  background-color: #3a3a3a;
+  color: #999;  
+  padding: 5px;
+  height: 332px;
+  &__content {
+    display: flex;
+    margin-top: 10px;
+    div:not(:last-child) {
+      border-right: 1px solid #999;
+      padding-bottom: 5px;
+    }
+    div {
+      padding: 0 15px 15px 15px;
+      width: 312px;
+      height: 281px;
+    }
+  }
+  &__title {
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #999;
+    margin-bottom: 5px;
+  }
+  ul {
+    li {
+      list-style: none;
+      padding-top: 5px;
+    }
   }
 }

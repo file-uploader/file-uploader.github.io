@@ -13,12 +13,14 @@ import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import { FilesComponent } from './files/files.component';
 import { SignFormComponent } from './sign-form/sign-form.component';
+import { LoginReportComponent } from './login-report/login-report.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FilesComponent,
-    SignFormComponent
+    SignFormComponent,
+    LoginReportComponent
   ],
   imports: [
     BrowserModule,

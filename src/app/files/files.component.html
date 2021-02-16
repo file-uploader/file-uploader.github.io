@@ -1,6 +1,7 @@
 <div class="container">
   <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
   <div class="logout-btn-conteainer">
+    <button class="btn-default login-report-btn" (click)="onEnableLoginReport()">Login report</button>
     <button class="btn-default" (click)="logOut()">Logout</button>
   </div>
   <div class="upload-files">

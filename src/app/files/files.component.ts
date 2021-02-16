@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { AngularFireStorage } from '@angular/fire/storage';
 import * as firebase from 'firebase/app';
@@ -6,7 +6,8 @@ import * as firebase from 'firebase/app';
 import { FirestoreService } from '../shared/services/firebase.service';
 import { File } from '../shared/models/file.model';
 import { AuthService } from '../shared/services/auth.service';
-import { User, UserAdditionalInfo } from '../shared/models/user.model';
+import { UserAdditionalInfo } from '../shared/models/user.model';
+import { SubjectsService } from '../shared/services/subjects.service';
 
 @Component({
   selector: 'app-files',
@@ -28,12 +29,14 @@ export class FilesComponent implements OnInit {
   confirmationPopup: boolean = false;
   currentUrl: string;
   currentId: string;
+  enableLoginReport: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
     private angularFireStorage: AngularFireStorage,
     private firestore: FirestoreService,
-    private authService: AuthService
+    private authService: AuthService,
+    private subjects: SubjectsService
   ) { }
 
   ngOnInit() {
@@ -54,7 +57,7 @@ export class FilesComponent implements OnInit {
       }
       this.isLoading = false;
     });
-
+      
     const userData: {
       email: string,
       id: string,
@@ -188,5 +191,10 @@ export class FilesComponent implements OnInit {
       const newInfo = { isChecked, userId }
       this.firestore.updateUser(newInfo);
     }
+  }
+
+  onEnableLoginReport() {
+    this.enableLoginReport = !this.enableLoginReport;
+    this.subjects.enableLoginReportSubject.next(this.enableLoginReport);
   }
 }

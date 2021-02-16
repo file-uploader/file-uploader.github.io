@@ -20,3 +20,9 @@ export class UserAdditionalInfo {
   confirmDelete: boolean;
   id?: string;
 }
+
+export class LoginReport {
+  email: string;
+  date: firebase.default.firestore.Timestamp;
+  id?: string;
+}
