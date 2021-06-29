@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { FirestoreService } from '../shared/services/firebase.service';
 import { UserAdditionalInfo, LoginReport } from '../shared/models/user.model';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login-report',
@@ -10,51 +10,45 @@ import { Subscription } from 'rxjs';
   styles: [
   ]
 })
-export class LoginReportComponent implements OnInit {
-  users: UserAdditionalInfo[] = [];
-  lastLogins: LoginReport[] = [];
-  failedLogins: LoginReport[] = [];
-  loginReportCount: number = 10;
+export class LoginReportComponent implements OnInit, OnDestroy {
+  users: UserAdditionalInfo[];
+  usersSubscription: Subscription;
 
+  lastLogins: LoginReport[];
+  lastLoginsSubscription: Subscription;
+
+  failedLogins: LoginReport[];
+  failedLoginsSubscription: Subscription;
+
+  loginReportCount: number;
+  loginReportCountbscription: Subscription;
 
   constructor(
-    private firestore: FirestoreService    
+    private _firestore: FirestoreService,
   ) { }
 
   ngOnInit(): void {
-    this.firestore.getUsers().subscribe(user => {
-      this.users = user.map(e => {
-        return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data() as UserAdditionalInfo
-        }   
-      })
-    })
+    this.usersSubscription = this._firestore.usersSubject.subscribe(users => {
+      this.users = users;
+    });
 
-    this.firestore.getLastLogins().subscribe(user => {
-      this.lastLogins = user.map(e => {
-        return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data() as LoginReport
-        }   
-      })
-      if (this.lastLogins.length > this.loginReportCount) {
-        const id = this.lastLogins[this.loginReportCount].id;
-        this.firestore.deleteLastLogins(id);
-      }
-    })
+    this.lastLoginsSubscription = this._firestore.lastLoginsSubject.subscribe(logins => {
+      this.lastLogins = logins;
+    });
 
-    this.firestore.getFailedLogins().subscribe(user => {
-      this.failedLogins = user.map(e => {
-        return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data() as LoginReport
-        }   
-      })
-      if (this.failedLogins.length > this.loginReportCount) {
-        const id = this.failedLogins[this.loginReportCount].id;
-        this.firestore.deleteFailedLogins(id);
-      }
-    })
+    this.failedLoginsSubscription = this._firestore.failedLoginsSubject.subscribe(logins => {
+      this.failedLogins = logins;
+    });
+
+    this.loginReportCountbscription = this._firestore.loginReportCountSubject.subscribe(number => {
+      this.loginReportCount = number;
+    });
+  }
+
+  ngOnDestroy() {
+    this.usersSubscription.unsubscribe();
+    this.lastLoginsSubscription.unsubscribe();
+    this.failedLoginsSubscription.unsubscribe();
+    this.loginReportCountbscription.unsubscribe();
   }
 }

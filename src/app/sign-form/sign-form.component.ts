@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import * as firebase from 'firebase/app';
+import { Subscription } from 'rxjs';
 
 import { AuthService } from '../shared/services/auth.service';
-import { FirestoreService } from '../shared/services/firebase.service';
+import { SubjectsService } from '../shared/services/subjects.service';
 
 @Component({
   selector: 'app-sign-form',
@@ -12,15 +11,16 @@ import { FirestoreService } from '../shared/services/firebase.service';
   styles: [
   ]
 })
-export class SignFormComponent implements OnInit {
+export class SignFormComponent implements OnInit, OnDestroy {
   signinForm: FormGroup;
-  errorMsgOnSubmit: string = null;
-  isLoading: boolean = false;
+  errorMsgSubscription: Subscription;
+  errorMsg: string = '';
+  isLoadingSubscription: Subscription;
+  isLoading: boolean;
 
   constructor(
-    private authService: AuthService, 
-    private router: Router,
-    private firestore: FirestoreService,
+    private _authService: AuthService,
+    private _subjects: SubjectsService
   ) {}
 
   ngOnInit() {
@@ -28,23 +28,24 @@ export class SignFormComponent implements OnInit {
       email: new FormControl (null , [Validators.required, Validators.email]),
       password: new FormControl (null , [Validators.required, Validators.minLength(8), Validators.maxLength(30)]),
     });
-  }  
+
+    this.errorMsgSubscription = this._subjects.errorMsgSubject.subscribe(error => {
+      this.errorMsg = error;
+    });
+
+    this.isLoadingSubscription = this._subjects.isLoadingSubject.subscribe(boolean => {
+      this.isLoading = boolean;
+    });
+  }
+
+  ngOnDestroy() {
+    this.errorMsgSubscription.unsubscribe();
+    this.isLoadingSubscription.unsubscribe();
+  }
 
   onSubmit(signinForm){
-    this.isLoading = true;
     const email = signinForm.value.email;
-    const date = firebase.default.firestore.Timestamp.now();
-    const user = { date, email};
     const password =  signinForm.value.password;
-    this.authService.signIn(email, password).subscribe(() => {  
-      this.errorMsgOnSubmit = null;
-      this.router.navigate(['/files']);
-      this.isLoading = false;
-      this.firestore.postLastLogins(user);
-    }, error => {
-      this.errorMsgOnSubmit = error; 
-      this.isLoading = false;
-      this.firestore.postFailedLogins(user);
-    });
+    this._authService.signIn(email, password);
   }
 }

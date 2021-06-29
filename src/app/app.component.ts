@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { AuthService } from './shared/services/auth.service';
+import { FirestoreService } from './shared/services/firebase.service';
 import { SubjectsService } from './shared/services/subjects.service';
 
 @Component({
@@ -16,20 +17,25 @@ export class AppComponent implements OnInit, OnDestroy {
   enableLoginReport: boolean;
 
   constructor(
-    private authService: AuthService,
-    private subjects: SubjectsService
+    private _authService: AuthService,
+    private _subjects: SubjectsService,
+    private _firestore: FirestoreService
   ) {}
 
   ngOnInit() {
-    this.subUser = this.authService.user.subscribe(user => {
+    this.subUser = this._authService.user.subscribe(user => {
       this.isAuth = !user ? false : true;
     });
 
-    this.authService.autoLogin(); 
+    this._authService.autoLogin(); 
     
-    this.enableLoginReportSub = this.subjects.enableLoginReportSubject.subscribe(data => {
+    this.enableLoginReportSub = this._subjects.enableLoginReportSubject.subscribe(data => {
       this.enableLoginReport = data;
-    })
+    });
+
+    this._firestore.getUsers();
+    this._firestore.getLastLogins();
+    this._firestore.getFailedLogins();
   }
 
   ngOnDestroy() {

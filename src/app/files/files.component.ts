@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { AngularFireStorage } from '@angular/fire/storage';
 import * as firebase from 'firebase/app';
@@ -8,20 +8,21 @@ import { File } from '../shared/models/file.model';
 import { AuthService } from '../shared/services/auth.service';
 import { UserAdditionalInfo } from '../shared/models/user.model';
 import { SubjectsService } from '../shared/services/subjects.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
   styles: []
 })
-export class FilesComponent implements OnInit {
+export class FilesComponent implements OnInit, OnDestroy {
   title = 'file-uploader';
   filesUploadForm: FormGroup;
   files: File[] = [];
   filesNames: any = [];
   fileURLs: any = [];
   uploadedFiles: File[] = [];
-  isLoading: boolean = true;
+  isLoading: boolean = false;
   filesSize: number = 0;
   fileId: string = null;
   userAdditionalData: UserAdditionalInfo[];
@@ -30,21 +31,27 @@ export class FilesComponent implements OnInit {
   currentUrl: string;
   currentId: string;
   enableLoginReport: boolean;
+  enableLoginReportSubscription: Subscription;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private angularFireStorage: AngularFireStorage,
-    private firestore: FirestoreService,
-    private authService: AuthService,
-    private subjects: SubjectsService
+    private _formBuilder: FormBuilder,
+    private _angularFireStorage: AngularFireStorage,
+    private _firestore: FirestoreService,
+    private _authService: AuthService,
+    private _subjects: SubjectsService
   ) { }
 
   ngOnInit() {
-    this.filesUploadForm = this.formBuilder.group({
+    this.enableLoginReportSubscription = this._subjects.enableLoginReportSubject.subscribe(boolean => {
+      this.enableLoginReport = boolean;
+    })
+
+    this.filesUploadForm = this._formBuilder.group({
       files: new FormControl(null, Validators.required)
     });
 
-    this.firestore.getFiles().subscribe(files => {
+    this.isLoading = true;
+    this._firestore.getFiles().subscribe(files => {
       this.filesSize = 0;
       this.uploadedFiles = files.map(e => {
         return {
@@ -67,7 +74,7 @@ export class FilesComponent implements OnInit {
     if (!userData) {
       return;
     }
-    this.firestore.getUser(userData.email).subscribe(user => {
+    this._firestore.getUser(userData.email).subscribe(user => {
       this.userAdditionalData = user.map(e => {
         return {
           id: e.payload.doc.id,
@@ -76,6 +83,10 @@ export class FilesComponent implements OnInit {
       })
       this.confirmBeforeDelete = this.userAdditionalData[0].confirmDelete;
     })
+  }
+
+  ngOnDestroy() {
+    this.enableLoginReportSubscription.unsubscribe();
   }
 
   uploadFiles(event) {
@@ -92,7 +103,7 @@ export class FilesComponent implements OnInit {
         resolve();
       }
       for (let i = 0; i < this.files.length; i++) {
-        this.angularFireStorage.upload(
+        this._angularFireStorage.upload(
           "/files/" +
           this.filesNames[i], this.files[i])
           .then(uploadTask => {
@@ -115,7 +126,6 @@ export class FilesComponent implements OnInit {
     }
 
     this.isLoading = true;
-
     this.uploadFilesToFirestore().then(() => {
       for (let i = 0; i < this.files.length; i++) {
         const name = this.files[i].name;
@@ -124,7 +134,7 @@ export class FilesComponent implements OnInit {
         const url = this.fileURLs[i];
 
         const file = { name, size, date, url };
-        this.firestore.uploadFiles(file)
+        this._firestore.uploadFiles(file)
           .then(() => {
             this.isLoading = false;
             if (i == this.files.length - 1) {
@@ -133,14 +143,14 @@ export class FilesComponent implements OnInit {
               this.filesNames = [];
               this.fileURLs = [];
             }
-          })
+        })
       }
     })
   }
 
   deleteFile(url, id) {
-    this.firestore.deleteFile(url);
-    this.firestore.deleteFileInfo(id);
+    this._firestore.deleteFile(url);
+    this._firestore.deleteFileInfo(id);
   }
 
   deleteFileChek(url, id) {
@@ -175,7 +185,7 @@ export class FilesComponent implements OnInit {
   }
 
   logOut() {
-    this.authService.logout();
+    this._authService.logout();
   }
 
   confirmDelete(event) {
@@ -184,17 +194,16 @@ export class FilesComponent implements OnInit {
       this.confirmBeforeDelete = true;
       const isChecked = this.confirmBeforeDelete;
       const newInfo = { isChecked, userId }
-      this.firestore.updateUser(newInfo);
+      this._firestore.updateUser(newInfo);
     } else {
       this.confirmBeforeDelete = false;
       const isChecked = this.confirmBeforeDelete;
       const newInfo = { isChecked, userId }
-      this.firestore.updateUser(newInfo);
+      this._firestore.updateUser(newInfo);
     }
   }
 
   onEnableLoginReport() {
-    this.enableLoginReport = !this.enableLoginReport;
-    this.subjects.enableLoginReportSubject.next(this.enableLoginReport);
+    this._subjects.loginRerport();
   }
 }

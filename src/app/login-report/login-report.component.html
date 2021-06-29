@@ -1,23 +1,23 @@
 <div class="login-report">
-  <p class="login-report__title">Хistory of the last 10 successful and failed logins</p>
-  <div class="login-report__content">
-    <div>
-      <p class="login-report__title">All registrations</p>
-      <ul>
-        <li *ngFor="let user of users">{{user.email}}</li>
-      </ul>
+    <p class="login-report__title">History of the last {{loginReportCount}} successful and failed logins</p>
+    <div class="login-report__content">
+        <div>
+            <p class="login-report__title">All registrations</p>
+            <ul>
+                <li *ngFor="let user of users">{{user.email}}</li>
+            </ul>
+        </div>
+        <div>
+            <p class="login-report__title">Last logins</p>
+            <ul>
+                <li *ngFor="let user of lastLogins">{{user.userEmail}} - {{user.date.toDate() | date:'dd.MM.yyyy H:mm'}}</li>
+            </ul>
+        </div>
+        <div>
+            <p class="login-report__title">Failed logins</p>
+            <ul>
+                <li *ngFor="let user of failedLogins">{{user.userEmail}} - {{user.date.toDate() | date:'dd.MM.yyyy H:mm'}}</li>
+            </ul>
+        </div>
     </div>
-    <div>
-      <p class="login-report__title">Last logins</p>
-      <ul>
-        <li *ngFor="let user of lastLogins">{{user.email}} - {{user.date.toDate() | date:'dd.MM.yyyy H:mm'}}</li>
-      </ul>
-    </div>
-    <div>
-      <p class="login-report__title">Failed logins</p>
-      <ul>
-        <li *ngFor="let user of failedLogins">{{user.email}} - {{user.date.toDate() | date:'dd.MM.yyyy H:mm'}}</li>
-      </ul>
-    </div>
-  </div>
 </div>

@@ -2,17 +2,8 @@ export class User{
   constructor(
     public email: string, 
     public id: string, 
-    private _tokenId: string, 
-    private _tokenExpTime: Date
+    public refreshToken: string
   ){}
-
-  get token(){
-    if (!this._tokenExpTime || new Date() > this._tokenExpTime){
-      return null;
-    } else{
-      return this._tokenId
-    }
-  }
 }
 
 export class UserAdditionalInfo {
@@ -22,7 +13,7 @@ export class UserAdditionalInfo {
 }
 
 export class LoginReport {
-  email: string;
+  userEmail: string;
   date: firebase.default.firestore.Timestamp;
   id?: string;
 }
