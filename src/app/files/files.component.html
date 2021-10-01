@@ -25,7 +25,12 @@
   <div class="used-mb">
     <div>
       <p>
-        Used <span [ngClass]="{'green' : filesSize <= 524288000, 'orange' : filesSize > 524288000 && filesSize <= 734003200, 'red': filesSize > 734003200}">{{filesSize | MbPipe}}</span> of 1000 MB
+        Used 
+        <span [ngClass]="{
+          'green' : filesSize <= 3*1024*1024000, 
+          'orange' : filesSize > 3*1024*1024000 && filesSize <= 4.5*1024*1024000, 
+          'red': filesSize > 4.5*1024*1024000}">{{filesSize | MbPipe}}
+        </span> of 5000 MB
       </p>
     </div>
     <div>
